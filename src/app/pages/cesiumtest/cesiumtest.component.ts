@@ -10,6 +10,7 @@ declare const Cesium;
 export class CesiumtestComponent implements OnInit {
   viewer: any;
   baseMap: any;
+  infodata: any; // 点击图标显示的文本内容
   constructor() { }
 
   ngOnInit() {
@@ -53,6 +54,7 @@ export class CesiumtestComponent implements OnInit {
       destination: Cesium.Rectangle.fromDegrees(121.44672084220201, 31.28868194981397, 121.45407791350203, 31.29060935499095),
     });
     this.addIcons();
+    this.addEvt();
   }
   addIcons() {
     if (config.mapConfig.billboards) {
@@ -85,5 +87,51 @@ export class CesiumtestComponent implements OnInit {
       properties: properties
     });
   }
+  addEvt() {
+    const handler = new Cesium.ScreenSpaceEventHandler(this.viewer.canvas);
+    handler.setInputAction((event) => {
+      const cartesian = this.viewer.camera.pickEllipsoid(event.position, this.viewer.scene.globe.ellipsoid);
+      const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+      const lon = Cesium.Math.toDegrees(cartographic.longitude);
+      const lat = Cesium.Math.toDegrees(cartographic.latitude);
+      const obj = this.viewer.scene.pick(event.position);
+      if (Cesium.defined(obj)) {
+        if (obj.id && obj.id.properties) { // 点击建筑物等获取属性
+          console.log(obj.id.properties.type);
+          this.showInfoWindow(lon, lat, obj.id.properties.type);
+        }
 
+      } else {
+        this.hideInfoWindow();
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  }
+  hideInfoWindow() {
+    const element = document.getElementById('infoWindow1');
+    element.style.display = 'none';
+  }
+  showInfoWindow(lon, lat, infoData) {
+    const divPosition = Cesium.Cartesian3.fromDegrees(lon, lat);
+    const cartesian2 = new Cesium.Cartesian2(); // cesium二维笛卡尔 笛卡尔二维坐标系就是我们熟知的而二维坐标系；三维也如此
+    const canvasPosition = this.viewer.scene.cartesianToCanvasCoordinates(divPosition, cartesian2); // cartesianToCanvasCoordinates 笛卡尔坐标（3维度）到画布坐标
+    const element = document.getElementById('infoWindow1');
+    element.style.display = 'block';
+    element.style.top = (canvasPosition.y + 64 - 100 - 150) + 'px';
+    element.style.left = (canvasPosition.x + 200) + 'px';
+    const elementinfo = document.getElementById('infoWindow');
+    elementinfo.style.display = 'block';
+    const elementLine = document.getElementById('infoLine');
+    elementLine.style.display = 'block';
+    this.infodata = infoData;
+    this.viewer.scene.preRender.addEventListener(() => {
+      const canvasPosition1 = this.viewer.scene.cartesianToCanvasCoordinates(divPosition, cartesian2);
+      // cartesianToCanvasCoordinates 笛卡尔坐标（3维度）到画布坐标
+      if (Cesium.defined(canvasPosition)) {
+        element.style.top = (canvasPosition1.y + 70 - 100 - 150) + 'px';
+        element.style.left = (canvasPosition1.x + 280) + 'px';
+        // element.style.top = (canvasPosition1.y + 64 - 100 - 150) + 'px';
+        // element.style.left = (canvasPosition1.x + 200) + 'px';
+      }
+    });
+  }
 }

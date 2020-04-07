@@ -2,3 +2,52 @@
     width: 100%;
     height: 100%;
 }
+
+#infoWindow1 {
+    display: none;
+    /* user-select: none;
+    pointer-events: none; */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 250px;
+    z-index: 99999;
+}
+
+#infoWindow {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    right: 0;
+    bottom: 100px;
+    display: none;
+    background-image: url(../../../assets/img/layer_border.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    color: #ffff00;
+}
+
+#infoLine {
+    position: absolute;
+    left: 0;
+    width: 50px;
+    height: 100px;
+    bottom: 0;
+    display: none;
+    background-image: url(../../../assets/img/line.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+.infospan {
+    padding-left: 80px;
+}
+
+.infoimg {
+    width: 230px;
+    height: 120px;
+    padding-left: 40px;
+}
