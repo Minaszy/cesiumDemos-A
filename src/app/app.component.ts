@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-declare const Cesium;
 
 @Component({
   selector: 'app-root',
@@ -9,6 +8,6 @@ declare const Cesium;
 export class AppComponent {
   isCollapsed = false;
   constructor() {
-    console.log(Cesium);
-   }
+
+  }
 }
